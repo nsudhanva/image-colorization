@@ -7,7 +7,7 @@ import torch
 from train import Trainer
 
 
-def plot_loss_psnr(training_loss, training_psnr, validation_loss, validation_psnr):
+def plot_loss_psnr(training_loss, validation_loss):
     # loss plots
     plt.figure(figsize=(10, 7))
     plt.plot(training_loss, color='orange', label='train loss')
@@ -17,22 +17,12 @@ def plot_loss_psnr(training_loss, training_psnr, validation_loss, validation_psn
     plt.legend()
     plt.savefig('./checkpoints/loss.png')
     plt.show()
-    # psnr plots
-    plt.figure(figsize=(10, 7))
-    plt.plot(training_psnr, color='green', label='train PSNR dB')
-    plt.plot(validation_psnr, color='blue', label='validataion PSNR dB')
-    plt.xlabel('Epochs')
-    plt.ylabel('PSNR (dB)')
-    plt.legend()
-    plt.savefig('./checkpoints/psnr.png')
-
 
 def main(data_dir):
 
     # Initialize best loss and best psnr
     current_best_loss = 10000.0
-    current_best_psnr = 0.0
-
+    
     # Initialize training object from the Train class
     epochs = 100
     trainer = Trainer()
@@ -43,26 +33,21 @@ def main(data_dir):
     # Define lists to keep track of training/validation loss and PSNR
     training_loss = []
     validation_loss = []
-    training_psnr = []
-    validation_psnr = []
 
     # Begin training
     print("Begininng training!")
     for epoch in range(0, epochs):
 
         # Train
-        val_dataloader, train_loss, train_psnr = trainer.train(
+        val_dataloader, train_loss = trainer.train(
             data_directory=data_dir, current_epoch=epoch)
         training_loss.append(train_loss)
-        training_psnr.append(train_psnr)
 
         # Validate
-        model, current_loss, current_psnr = trainer.validate(
+        model, current_loss = trainer.validate(
             val_dataloader=val_dataloader, current_epoch=epoch)
         validation_loss.append(current_loss)
-        validation_psnr.append(current_psnr)
 
-        current_best_psnr = max(current_best_psnr, current_psnr)
         if current_loss < current_best_loss:
             current_best_loss = current_loss
 
@@ -74,14 +59,11 @@ def main(data_dir):
 
         print("-----------------------------------")
         print("Train & Validation complete for epoch - ", epoch)
-        print("Final Validation Loss = ", current_best_loss,
-              "\nFinal PSNR = ", current_best_psnr)
+        print("Final Validation Loss = ", current_best_loss)
         print("===================================")
 
     print("Training and validation complete - current Loss = ", current_best_loss)
-    print("Training and validation complete - current PSNR = ", current_best_psnr)
-    plot_loss_psnr(training_loss,  training_psnr,
-                   validation_loss, validation_psnr)
+    plot_loss_psnr(training_loss, validation_loss)
 
     return current_best_loss, epoch
 

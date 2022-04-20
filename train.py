@@ -18,23 +18,6 @@ class Trainer:
         self.criterion = nn.MSELoss()
         self.model = AE_conv()
 
-    # Writing a function to compute the PSNR performance metric that measures similarity between the output from the model and the target.
-    def psnr(self, target, output, max_val=1.):
-        """
-        Compute Peak Signal to Noise Ratio (the higher the better).
-        PSNR = 20 * log10(MAXp) - 10 * log10(MSE).
-        https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio#Definition
-        """
-        target = target.cpu().detach().numpy()
-        output = output.cpu().detach().numpy()
-        difference_image = output - target
-        rmse = math.sqrt(np.mean((difference_image) ** 2))
-        if rmse == 0:
-            return 100
-        else:
-            psnr = 20 * math.log10(max_val / rmse)
-            return psnr
-
     def train(self, data_directory, current_epoch):
         print("Loading dataset --")
         dataset = os.listdir(data_directory)
@@ -63,16 +46,12 @@ class Trainer:
             self.model = self.model.cuda()
             self.criterion = self.criterion.cuda()
 
-        optimizer = torch.optim.RMSprop(
+        optimizer = torch.optim.Adam(
             self.model.parameters(), lr=self.learning_rate)
 
         # train loop
         # Define Running Loss to keep track later in the train loop
         running_loss = 0.0
-        running_psnr = 0.0
-
-        # Print loaded model
-        # print("Model loaded ->", self.model)
 
         for i, (input, target) in enumerate(train_dataloader):
             if self.device == 'CUDA':
@@ -82,6 +61,8 @@ class Trainer:
             output_image = self.model(input)
             loss = self.criterion(output_image, target)
 
+            # print("Output - ", output_image)
+            # print("Target - ", target)
             # Set the gradient of tensors to zero.
             optimizer.zero_grad()
             # Compute the gradient of the current tensor by employing chain rule and propogating it back in the network.
@@ -95,15 +76,13 @@ class Trainer:
                       "\nCurrent loss = ", loss)
 
         final_loss = running_loss / len(train_dataloader)
-        final_psnr = running_psnr / len(train_dataloader)
 
-        return val_dataloader, final_loss, final_psnr
+        return val_dataloader, final_loss
 
     def validate(self, val_dataloader, current_epoch):
         # Validation loop begin
         # ------
         running_loss = 0.0
-        running_psnr = 0.0
         self.model.eval()
 
         with torch.no_grad():
@@ -116,10 +95,8 @@ class Trainer:
                 loss = self.criterion(output_image, target)
 
                 running_loss += loss.item()
-                batch_psnr = self.psnr(target, output_image)
-                running_psnr += batch_psnr
 
-                if i % 50 == 0:
+                if i % 100 == 0:
                     print("Current Epoch = ", current_epoch,
                           "\nCurrent loss = ", loss)
 
@@ -127,6 +104,5 @@ class Trainer:
         # ------
         # Determine your evaluation metrics on the validation dataset.
         final_loss = running_loss / len(val_dataloader)
-        final_psnr = running_psnr / len(val_dataloader)
 
-        return self.model, final_loss, final_psnr
+        return self.model, final_loss        
