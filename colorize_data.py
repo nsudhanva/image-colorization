@@ -14,10 +14,10 @@ class ColorizeData(Dataset):
         self.landscape_dataset = landscape_dataset
         self.data_directory = data_directory
         self.input_transform = T.Compose([T.ToTensor(),
-                                          T.Resize(size=(256, 256))])
+                                          T.Resize(size=(224, 224))])
         # Use this on target images(colorful ones)
         self.target_transform = T.Compose([T.ToTensor(),
-                                           T.Resize(size=(256, 256))])
+                                           T.Resize(size=(224, 224))])
 
     def __len__(self) -> int:
         # return Length of dataset
