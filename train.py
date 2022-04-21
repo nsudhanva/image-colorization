@@ -59,7 +59,8 @@ class Trainer:
                 target = target.cuda()
 
             output_image = self.model(input)
-            loss = self.criterion(output_image, target)
+            loss = self.criterion(
+                output_image, torch.cat(input, target, dim=1))
 
             # print("Output - ", output_image)
             # print("Target - ", target)
@@ -92,7 +93,8 @@ class Trainer:
                     target = target.cuda()
 
                 output_image = self.model(input)
-                loss = self.criterion(output_image, target)
+                loss = self.criterion(
+                    output_image, torch.cat(input, target, dim=1))
 
                 running_loss += loss.item()
 
@@ -105,4 +107,4 @@ class Trainer:
         # Determine your evaluation metrics on the validation dataset.
         final_loss = running_loss / len(val_dataloader)
 
-        return self.model, final_loss        
+        return self.model, final_loss

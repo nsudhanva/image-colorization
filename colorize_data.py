@@ -11,6 +11,7 @@ class ColorizeData(Dataset):
     def __init__(self, landscape_dataset, data_directory):
         # Initialize dataset, you may use a second dataset for validation if required
         # Use the input transform to convert images to grayscale
+
         self.landscape_dataset = landscape_dataset
         self.data_directory = data_directory
         self.input_transform = T.Compose([T.ToTensor(),

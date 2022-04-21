@@ -1,17 +1,16 @@
 import os
 import sys
 
+import cv2
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
 from PIL import Image
-from skimage.color import rgb2gray, lab2rgb
+from skimage.color import lab2rgb, rgb2gray
 from torchvision import transforms
-import cv2
+
 from basic_model import Net
 from enc_dec import AE_conv
-
-
 
 if __name__ == '__main__':
     # Read the two input parameters, which is the model checkpoint and grayscale image

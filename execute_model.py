@@ -18,11 +18,12 @@ def plot_loss_psnr(training_loss, validation_loss):
     plt.savefig('./checkpoints/loss.png')
     plt.show()
 
+
 def main(data_dir):
 
     # Initialize best loss and best psnr
     current_best_loss = 10000.0
-    
+
     # Initialize training object from the Train class
     epochs = 100
     trainer = Trainer()
