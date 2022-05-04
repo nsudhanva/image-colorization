@@ -13,106 +13,133 @@
 \usepackage{graphicx}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
-\title{Your Paper}
-\author{You}
-
+\title{Comparing Regression, Autoencoder and Generative
+Adversarial Network (GAN) for Image Colorization}
+\author{Vikram Bharadwaj, Sudhanva Narayana \\ 
+        CS6140 Machine Learning \\
+        Professor: Dr. Ehsan Elhamifar \\}
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Your abstract.
+    Every color image is a combination of 3 channels namely: R, G, and B. Another
+    way used to represent images is called the L, *a, *b (CIELAB) colorspace.
+
+    \
+
+    The three channels are described in detail below:
+    L - Lightness channel, which represents the illuminatoion or the color temperature of the image.
+    *a *b - Chromaticity channels, represents the color of the image, that is a
+    combination of red, green, blue, and yellow, the four primary colors.
+    Traditional image colorization methods often use regression to predict the *a and *b
+    channel values, where often times, the obtained color images do not reflect the actual
+    image. 
+    
+    \
+    
+    In this study, we aim to compare the performance of regression, an autoencoder
+    and GANs for image colorization.
 \end{abstract}
 
 \section{Introduction}
 
-Your introduction goes here! Simply start writing your document and use the Recompile button to view the updated PDF preview. Examples of commonly used commands and features are listed below, to help you get started.
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
 
-Once you're familiar with the editor, you can find various project setting in the Overleaf menu, accessed via the button in the very top left of the editor. To view tutorials, user guides, and further documentation, please visit our \href{https://www.overleaf.com/learn}{help library}, or head to our plans page to \href{https://www.overleaf.com/user/subscription/plans}{choose your plan}.
+For image colorization, we will use three methods.
 
-\section{Some examples to get started}
+- \textbf{Convolutional Neural Netwrok + Regression:} Loss between actual values of *a and *b channels and predicted *a and *b channels using vanilla CNN, followed by regression.
 
-\subsection{How to create Sections and Subsections}
+- \textbf{Convnet Autoencoder:} Uses CNN in an encoder-decoder fashion, where the encoder represents the grayscale image as a latent representation, which the decoder then converts to a 3-channel color image.
 
-Simply use the section and subsection commands, as in this example document! With Overleaf, all the formatting and numbering is handled automatically according to the template you've chosen. If you're using Rich Text mode, you can also create new section and subsections via the buttons in the editor toolbar.
+- \textbf{GAN:}  Uses a custom minimax log-loss function with a generator and a discriminator. The generator takes a grayscale image as an input, which it tries to convert to a 3-channel color image. The discriminator tries to tell 2 sets of images apart, i.e., (grayscale, original-color) and (grayscale, generator-color-image).
 
-\subsection{How to include Figures}
+\subsection{Related Work}
+
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
+
+\section{Technical Details}
+
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
+
+\subsection{Method 1: Regression}
+
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
+
+\subsection{Method 2: Autoencoder}
+
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
+
+\subsection{Method 3: Generative Adversarial Network}
 
 First you have to upload the image file from your computer using the upload link in the file-tree menu. Then use the includegraphics command to include it in your document. Use the figure environment and the caption command to add a number and a caption to your figure. See the code for Figure \ref{fig:frog} in this section for an example.
 
 Note that your figure will automatically be placed in the most appropriate place for it, given the surrounding text and taking into account other figures or tables that may be close by. You can find out more about adding images to your documents in this help article on \href{https://www.overleaf.com/learn/how-to/Including_images_on_Overleaf}{including images on Overleaf}.
 
-\begin{figure}
-\centering
-\includegraphics[width=0.3\textwidth]{frog.jpg}
-\caption{\label{fig:frog}This frog was uploaded via the file-tree menu.}
-\end{figure}
+\section{Technical Details}
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
 
-\subsection{How to add Tables}
+\subsection{Dataset: MIT Places}
+We will be using a color-filled landscape dataset called Places 365 from MIT CSAILVision Lab. 
+The dataset contains images of natural scenes and their corresponding colorizations. 
+The dataset is available at https://places.csail.mit.edu/places365/. 
+Places contains more than 10 million images comprising 400+ unique scene categories. 
+The dataset features 5000 to 30,000 training images per class, consistent with real-world frequencies of occurrence. 
 
-Use the table and tabular environments for basic tables --- see Table~\ref{tab:widgets}, for example. For more information, please see this help article on \href{https://www.overleaf.com/learn/latex/tables}{tables}. 
+\subsection{Dataset: Preprocessing}
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
 
-\begin{table}
-\centering
-\begin{tabular}{l|r}
-Item & Quantity \\\hline
-Widgets & 42 \\
-Gadgets & 13
-\end{tabular}
-\caption{\label{tab:widgets}An example table.}
-\end{table}
+\subsubsection{Pre-processing for Regression}
+For the first method, where we leverage pure CNN with regression, the following are the pre-processing steps:\\
+    - All images are first converted to L*a*b channel image from RGB channel. \\
+    - The L channel first extracted from the L*a*b channel image and this serves as the input to the regression model. \\
+    - The *a and *b channels are used as the tragets for the regression model. \\
+    - The images are then resized to a fixed size of 256x256. \\
+    - The images are then normalized to the range of [0, 1] for the L channel and [-1, 1] for *a and *b channels. \\
+    - The images are then divided into training and test sets, with a train split of 75\% \\
+    - The training set is then used to train the model. \\
 
-\subsection{How to add Comments and Track Changes}
+\subsubsection{Pre-processing for Convnet based encoder-decoder and GAN}
+Here, we will use the same pre-processing steps as for the regression method. The only difference is that we will use a CNN in an encoder-decoder fashion for the second method and a GAN for the third, as shown below:
 
-Comments can be added to your project by highlighting some text and clicking ``Add comment'' in the top right of the editor pane. To view existing comments, click on the Review menu in the toolbar above. To reply to a comment, click on the Reply button in the lower right corner of the comment. You can close the Review pane by clicking its name on the toolbar when you're done reviewing for the time being.
+\subsection{Implementation}
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
 
-Track changes are available on all our \href{https://www.overleaf.com/user/subscription/plans}{premium plans}, and can be toggled on or off using the option at the top of the Review pane. Track changes allow you to keep track of every change made to the document, along with the person making the change. 
+\subsection{Results}
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
 
-\subsection{How to add Lists}
+\section{Limitations and Further Work}
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
 
-You can make lists with automatic numbering \dots
-
-\begin{enumerate}
-\item Like this,
-\item and like this.
-\end{enumerate}
-\dots or bullet points \dots
-\begin{itemize}
-\item Like this,
-\item and like this.
-\end{itemize}
-
-\subsection{How to write Mathematics}
-
-\LaTeX{} is great at typesetting mathematics. Let $X_1, X_2, \ldots, X_n$ be a sequence of independent and identically distributed random variables with $\text{E}[X_i] = \mu$ and $\text{Var}[X_i] = \sigma^2 < \infty$, and let
-\[S_n = \frac{X_1 + X_2 + \cdots + X_n}{n}
-      = \frac{1}{n}\sum_{i}^{n} X_i\]
-denote their mean. Then as $n$ approaches infinity, the random variables $\sqrt{n}(S_n - \mu)$ converge in distribution to a normal $\mathcal{N}(0, \sigma^2)$.
-
-
-\subsection{How to change the margins and paper size}
-
-Usually the template you're using will have the page margins and paper size set correctly for that use-case. For example, if you're using a journal article template provided by the journal publisher, that template will be formatted according to their requirements. In these cases, it's best not to alter the margins directly.
-
-If however you're using a more general template, such as this one, and would like to alter the margins, a common way to do so is via the geometry package. You can find the geometry package loaded in the preamble at the top of this example file, and if you'd like to learn more about how to adjust the settings, please visit this help article on \href{https://www.overleaf.com/learn/latex/page_size_and_margins}{page size and margins}.
-
-\subsection{How to change the document language and spell check settings}
-
-Overleaf supports many different languages, including multiple different languages within one document. 
-
-To configure the document language, simply edit the option provided to the babel package in the preamble at the top of this example project. To learn more about the different options, please visit this help article on \href{https://www.overleaf.com/learn/latex/International_language_support}{international language support}.
-
-To change the spell check language, simply open the Overleaf menu at the top left of the editor window, scroll down to the spell check setting, and adjust accordingly.
-
-\subsection{How to add Citations and a References List}
-
-You can simply upload a \verb|.bib| file containing your BibTeX entries, created with a tool such as JabRef. You can then cite entries from it, like this: \cite{greenwade93}. Just remember to specify a bibliography style, as well as the filename of the \verb|.bib|. You can find a \href{https://www.overleaf.com/help/97-how-to-include-a-bibliography-using-bibtex}{video tutorial here} to learn more about BibTeX.
-
-If you have an \href{https://www.overleaf.com/user/subscription/plans}{upgraded account}, you can also import your Mendeley or Zotero library directly as a \verb|.bib| file, via the upload menu in the file-tree.
-
-\subsection{Good luck!}
-
-We hope you find Overleaf useful, and do take a look at our \href{https://www.overleaf.com/learn}{help library} for more tutorials and user guides! Please also let us know if you have any feedback using the Contact Us link at the bottom of the Overleaf menu --- or use the contact form at \url{https://www.overleaf.com/contact}.
-
+\section{Contribution}
+The idea is to use grayscale images for complex image processing. The goal of this
+study is to develop a method for colorizing grayscale images using Regression and
+compare how the model performs against the use of an autoencoder and a GAN. 
+\cite{1}
+\cite{2}
+\cite{3}
+\cite{4}
+\cite{5}
+\cite{6}
 \bibliographystyle{alpha}
 \bibliography{sample}
 
