@@ -44,9 +44,9 @@ The goal of this study is to develop a method for colorizing grayscale images us
 
 %----------------------------- Technical Details -----------------------------%
 \section{Technical Details}
-The task is not as simple as it seems. This task can be formulated as a problem of data imputation in which the color values of *a and *b values are "hallucinated".
+This task can be formulated as a problem of data imputation in which the color values of \textbf{*a} and \textbf{*b} values are "hallucinated".
 The mapping from a grayscale channel to color channels is a non-deterministic problem. 
-The range of values that each grayscale pixel can predict is exponentially large and the mapping is non-linear.
+The range of values that each grayscale pixel can predict is exponentially large and the mapping is non-linear. 
 
 %----------------------------- Method 1: Regression -----------------------------%
 \subsection{Method 1: Regression}
@@ -143,7 +143,7 @@ The loss function in a GAN is the following:
 
 %----------------------------- Dataset -----------------------------%
 \subsection{Dataset}
-Our training, validation and test datasets are picked from the validation set pof MIT's Places 365. The dataset is from the CSAILVision Lab and can be accessed at \cite{1}.
+Our training, validation and test datasets are picked from the validation set pof MIT's Places 365 \cite{7}. The dataset is from the CSAILVision Lab and can be accessed at \url{places2.csail.mit.edu/}.
 All the images are in RGB format, and are 256x256 pixels in size. All channel values are in the range [0, 255].
 Since there are more than 30,000 images, due to time and compute constraints, we only use a subset of the dataset of around 2,500 images for training and an additional 500 images for validation.
 
@@ -164,12 +164,13 @@ Our models are now trained on this L channel to predict the values of the a and 
 
 %----------------------------- Pre-processing for Convnet based encoder-decoder and GAN -----------------------------%   
 \subsubsection{Pre-processing for Convnet based encoder-decoder and GAN}
-Here, we will use the same pre-processing steps as for the regression method. The only difference is that we will use a CNN in an encoder-decoder fashion for the second method and a GAN for the third, as shown below:
+Here, we will use the same pre-processing steps as for the regression method. 
+The only difference is that we will use a CNN in an encoder-decoder fashion for the second method and a GAN for the third, as shown below:
 
 %----------------------------- Implementation -----------------------------%
 \subsection{Implementation}
-The idea is to use grayscale images for complex image processing. The goal of this
-study is to develop a method for colorizing grayscale images using Regression and
+The idea is to use grayscale images for complex image processing. 
+The goal of this study is to develop a method for colorizing grayscale images using Regression and
 compare how the model performs against the use of an autoencoder and a GAN. 
 
 %----------------------------- Results -----------------------------%
@@ -187,7 +188,7 @@ compare how the model performs against the use of an autoencoder and a GAN.
 %----------------------------- Contribution -----------------------------%
 \section{Contribution}
 
-The code and instructions to run it are available at \url{github.com/nsudhanva/image-colorization}. 
+The code and instructions to use or run it are available at \url{github.com/nsudhanva/image-colorization}. 
 The project was built with both Vikram and Sudhanva as collaborators in the same repository with each of them being collaborative on code, reports and training.
 
 \
