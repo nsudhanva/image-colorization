@@ -74,6 +74,31 @@ The loss function for this problem is the Euclidean distance between the predict
     \ell(x,y) = \sum_{i=1}^{n} \left( x_{AB} - y_{AB} \right)^2
 \end{equation}}
 
+%----------------------------- Architecture -----------------------------%
+
+\subsection{Architecture}
+
+\
+
+* All layers are two-dimensional convolutional layers.
+
+{\Large
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| } 
+\hline
+Input Size & Output Size & Kernel Size & Function & Upsample \\
+\hline
+512 & 128 & 3 & ReLU & Scale Factor = 2 \\ 
+128 & 64 & 3 & ReLU & - \\ 
+64 & 64 & 3 & ReLU &  - \\ 
+64 & 32 & 3 & ReLU & Scale Factor = 2 \\ 
+32 & 2 & 3 & ReLU & Scale Factor = 2 \\ 
+
+\hline
+\end{tabular}
+\end{center}
+}
+\pagebreak
 %----------------------------- Method 2: Autoencoder -----------------------------%
 
 \subsection{Method 2: Autoencoder}
@@ -81,7 +106,9 @@ In this method, we use a convolutional autoencoder to learn a mapping from grays
 The encoder is a convolutional neural network, which reduces the given grayscale image to a dense latent representation, from which the decoder reconstructs the AB channels of the image.
 Therefore, in this method, we have two CNNs, one for the encoder and one for the decoder.
 The upsampling layers in the decoder are transposed convolutional layers, where there are a lot of parameters to be learned by the model while reconstructing the AB channels of the image.
-The architecture of the entire network is as shown in the figure below.
+The architecture of the entire network is as shown in the figure below. 
+One approach is to make two copies of the image, one to be a grayscale image and it will act as your input to the encoder which is responsible for extracting the features of the image 
+“Latent Space Representations” that can be used as input for the decoder to reconstruct the image, the other copy will be the same image but colorized as your target to the decoder (Supervised Learning) so that it can minimize the error between the original colored image and the generated one.
 \\
 \includegraphics{autoencoder.jpg}
 
@@ -90,22 +117,73 @@ The architecture of the entire network is as shown in the figure below.
 \subsection{Loss Function}
 The loss function for this method is the Euclidean distance between the predicted AB channel and the ground truth and is the same as (1).
 
+
 %----------------------------- Architecture -----------------------------%
 
 \subsection{Architecture}
 
+\
+
+* All layers are two-dimensional convolutional layers.
+
+\subsubsection{Encoder}
+
 {\Large
 \begin{center}
-\begin{tabular}{ |c|c|c| } 
+\begin{tabular}{ |c|c|c|c|c| } 
 \hline
-col1 & col2 & col3 \\
+Input Size & Output Size & Kernel Size & Function  \\
 \hline
-cell1 & cell2 & cell3  \\ 
-cell5 & cell6 & cell7  \\ 
+1 & 32 & 3 & ReLU \\ 
+32 & 64 & 3 & ReLU  \\ 
+64 & 128 & 3 & ReLU \\ 
+128 & 256 & 3 & ReLU \\ 
+
 \hline
 \end{tabular}
 \end{center}
 }
+\pagebreak
+\subsubsection{Fusion}
+
+* All layers are linear layers.
+
+{\Large
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| } 
+\hline
+Input Size & Output Size  \\
+\hline
+256 * 14 * 14 & 56 \\ 
+256 & 256 * 14 * 14 \\ 
+
+\hline
+\end{tabular}
+\end{center}
+}
+
+\subsubsection{Decoder}
+
+* All layers here are two dimensional transposed convolutional layers.
+
+{\Large
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| } 
+\hline
+Input Size & Output Size & Kernel Size & Function & Upsample \\
+\hline
+256 & 256 & 3 & ReLU & ConvTranspose2D \\ 
+256 & 128 & 3 & ReLU & ConvTranspose2D \\ 
+128 & 64 & 3 & ReLU &  ConvTranspose2D \\ 
+64 & 2 & 3 & ReLU & ConvTranspose2D \\ 
+\hline
+\end{tabular}
+\end{center}
+}
+
+Final activation function is TanH
+
+\
 
 %----------------------------- Method 3: Generative Adversarial Network -----------------------------%
 
@@ -207,7 +285,8 @@ compare how the model performs against the use of an autoencoder and a GAN.
 %----------------------------- Contribution -----------------------------%
 \section{Contribution}
 
-The code and instructions to use or run it are available at \url{github.com/nsudhanva/image-colorization}. 
+The code and instructions to use or run it are available 
+at \url{github.com/nsudhanva/image-colorization}. 
 The project was built with both Vikram and Sudhanva as collaborators in the same repository with each of them being collaborative on code, reports and training.
 
 \
