@@ -59,7 +59,11 @@ Specifically, the beginning of our model is a ResNet-18, an image classification
 Modify the first layer of the network to accept grayscale input images and cut it off after the 6th set of layers. 
 It predicts a two-element vector (AB channel) for each pixel of the image at the end of the network, as shown in the figure below.
 \\
-\includegraphics[width=\linewidth]{reg.jpg}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{reg.jpg}
+    \caption{CNN + Regression architecture}
+\end{figure}
 
 We want to minimize the Euclidean error between the AB channel we estimate and the ground truth.
 However, this loss function is problematic for colorization due to the multimodality of the problem since there may be multiple plausible solutions.
@@ -74,15 +78,15 @@ The loss function for this problem is the Euclidean distance between the predict
     \ell(x,y) = \sum_{i=1}^{n} \left( x_{AB} - y_{AB} \right)^2
 \end{equation}}
 
+
 %----------------------------- Architecture -----------------------------%
 
-\subsection{Architecture}
+\subsection{Architecture: Regression}
 
 \
 
 * All layers are two-dimensional convolutional layers.
-
-{\Large
+\begin{table}
 \begin{center}
 \begin{tabular}{ |c|c|c|c|c| } 
 \hline
@@ -95,9 +99,13 @@ Input Size & Output Size & Kernel Size & Function & Upsample \\
 32 & 2 & 3 & ReLU & Scale Factor = 2 \\ 
 
 \hline
+
 \end{tabular}
+
 \end{center}
-}
+\caption{CNN + Regression architecture}
+\end{table}
+
 \pagebreak
 %----------------------------- Method 2: Autoencoder -----------------------------%
 
@@ -110,25 +118,25 @@ The architecture of the entire network is as shown in the figure below.
 One approach is to make two copies of the image, one to be a grayscale image and it will act as your input to the encoder which is responsible for extracting the features of the image 
 “Latent Space Representations” that can be used as input for the decoder to reconstruct the image, the other copy will be the same image but colorized as your target to the decoder (Supervised Learning) so that it can minimize the error between the original colored image and the generated one.
 \\
-\includegraphics{autoencoder.jpg}
 
+\begin{figure}
+    \includegraphics[width=10cm, height=7cm]{autoencoder.jpg}
+    \caption{Autoencoder architecture}
+\end{figure}
 %----------------------------- Loss Function: Autoencoder -----------------------------%
 
-\subsection{Loss Function}
+\subsection{Loss Function: Autoencoder}
 The loss function for this method is the Euclidean distance between the predicted AB channel and the ground truth and is the same as (1).
 
 
 %----------------------------- Architecture -----------------------------%
 
-\subsection{Architecture}
+\subsection{Architecture: Autoencoder}
 
-\
-
-* All layers are two-dimensional convolutional layers.
 
 \subsubsection{Encoder}
+* All layers are two-dimensional convolutional layers.
 
-{\Large
 \begin{center}
 \begin{tabular}{ |c|c|c|c|c| } 
 \hline
@@ -142,13 +150,11 @@ Input Size & Output Size & Kernel Size & Function  \\
 \hline
 \end{tabular}
 \end{center}
-}
-\pagebreak
+
 \subsubsection{Fusion}
 
 * All layers are linear layers.
 
-{\Large
 \begin{center}
 \begin{tabular}{ |c|c|c|c|c| } 
 \hline
@@ -160,13 +166,11 @@ Input Size & Output Size  \\
 \hline
 \end{tabular}
 \end{center}
-}
 
 \subsubsection{Decoder}
 
 * All layers here are two dimensional transposed convolutional layers.
 
-{\Large
 \begin{center}
 \begin{tabular}{ |c|c|c|c|c| } 
 \hline
@@ -179,9 +183,8 @@ Input Size & Output Size & Kernel Size & Function & Upsample \\
 \hline
 \end{tabular}
 \end{center}
-}
 
-Final activation function is TanH
+Final activation function is TanH [-1, 1] for the output of the decoder.
 
 \
 
@@ -253,29 +256,61 @@ The only difference is that we will use a CNN in an encoder-decoder fashion for 
 
 %----------------------------- Implementation -----------------------------%
 \subsection{Implementation}
-The idea is to use grayscale images for complex image processing. 
-The goal of this study is to develop a method for colorizing grayscale images using Regression and
-compare how the model performs against the use of an autoencoder and a GAN. 
+We have used ResNet-18 as the encoder and decoder for the first two methods. 
+The encoder is trained on the training set and the decoder is trained on the validation set.
+The encoder is used to generate the latent space vector z.
+The decoder is used to generate the predicted image from the latent space vector z.
+The generator is used to generate the predicted image from the latent space vector z.
+
 
 %----------------------------- Results -----------------------------%
 \subsection{Results}
 
-{\Large
 \begin{center}
 \begin{tabular}{ |c |c|c| } 
 \hline
-\textbf{Methods} & \textbf{MSE Loss} & \textbf{Accuracy} \\
+\textbf{Methods} & \textbf{MSE Loss}\\
 \hline
-Regression & col2 & col3 \\
+Regression & col2 \\
 \hline
-Autoencoder & cell2 & cell3  \\ 
+Autoencoder & cell2   \\ 
 \hline
-GAN & cell6 & cell7  \\ 
+GAN & cell6  \\ 
 \hline
 \end{tabular}
 \end{center}
-}
 
+\pagebreak
+
+\subsubsection{Regression Loss Plot}
+
+\begin{figure}[h]
+\begin{center}
+    \includegraphics[width=10cm, height=5cm]{regression-plot.jpg}
+    \caption{Caption}
+\end{center}
+\end{figure}
+
+\subsubsection{Autoencoder Loss Plot}
+
+\begin{figure}[h]
+\begin{center}
+    \includegraphics[width=9cm, height=4cm]{encoder-decoder-plot.jpg}
+    \caption{Caption}
+\end{center}
+\end{figure}
+
+
+\subsubsection{GAN Loss Plot}
+
+\begin{figure}[h]
+\begin{center}
+    \includegraphics[width=9cm, height=4cm]{encoder-decoder-plot.jpg}
+    \caption{Caption}
+\end{center}
+\end{figure}
+
+\pagebreak
 %----------------------------- Limitations and Further Work -----------------------------%
 \section{Limitations and Further Work}
 The idea is to use grayscale images for complex image processing. The goal of this
