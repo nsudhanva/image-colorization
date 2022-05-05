@@ -10,14 +10,17 @@
 
 % Useful packages
 \usepackage{amsmath}
+\usepackage{amsfonts}
 \usepackage{graphicx}
+\usepackage{multirow}
+
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
 \title{Comparing Regression, Autoencoder and Generative
 Adversarial Network (GAN) for Image Colorization}
 \author{Vikram Bharadwaj, Sudhanva Narayana \\ 
         CS6140 Machine Learning \\
-        Professor: Dr. Ehsan Elhamifar \\}
+        Professor: Prof. Ehsan Elhamifar \\}
 \begin{document}
 \maketitle
 
@@ -50,10 +53,10 @@ The range of values that each grayscale pixel can predict is exponentially large
 
 %----------------------------- Method 1: Regression -----------------------------%
 \subsection{Method 1: Regression}
-We first use several convolutional layers to extract semantic information from the input images and then apply deconvolutional layers to upscale the extracted information.
+Several convolutional layers extract semantic information from the input images and then apply deconvolutional layers to upscale the extracted information.
 Here, we are using pure upsample, where there are no parameters to be learned.
 Specifically, the beginning of our model is a ResNet-18, an image classification network with 18 layers and residual connections. 
-We modify the first layer of the network to accept grayscale input images and cut it off after the 6th set of layers. 
+Modify the first layer of the network to accept grayscale input images and cut it off after the 6th set of layers. 
 It predicts a two-element vector (AB channel) for each pixel of the image at the end of the network, as shown in the figure below.
 \\
 \includegraphics[width=\linewidth]{reg.jpg}
@@ -90,24 +93,19 @@ The loss function for this method is the Euclidean distance between the predicte
 %----------------------------- Architecture -----------------------------%
 
 \subsection{Architecture}
-\setlength{\arrayrulewidth}{0.5mm}
-\setlength{\tabcolsep}{18pt}
-\renewcommand{\arraystretch}{1.5}
-\begin{tabular}{ |p{3cm}|p{3cm}|p{3cm}|  }
+
+{\Large
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
 \hline
-\multicolumn{3}{|c|}{Convolutional Autoencoder} \\
+col1 & col2 & col3 \\
 \hline
-Encoder & Fusion & Decoder \\
-\hline
-Conv2D 32 x 3 x 3 - ReLu & Fusion &  \\
-Aland Islands & AX   & ALA \\
-Albania &AL & ALB \\
-Algeria    &DZ & DZA \\
-American Samoa & AS & ASM \\
-Andorra & AD & AND   \\
-Angola & AO & tanh \\
+cell1 & cell2 & cell3  \\ 
+cell5 & cell6 & cell7  \\ 
 \hline
 \end{tabular}
+\end{center}
+}
 
 %----------------------------- Method 3: Generative Adversarial Network -----------------------------%
 
@@ -128,10 +126,18 @@ This loss could make the generator generate images that have less difference wit
 %----------------------------- Loss Function: GAN -----------------------------%
 \subsection{Loss Function}
 The loss function in a GAN is the following:
+{\Large
 \begin{equation}
     \ell(x,y) = \frac{1}{2} \left( \sum_{i=1}^{n} \left( x_{AB} - y_{AB} \right)^2 + \lambda \sum_{i=1}^{n} \left( x_{AB} - y_{AB} \right)^2 \right)
 \end{equation}
-% $$\min_{G}\max_{D}\mathbb{E}_{x\sim p_{\text{data}}(x)}[\log{D(x)}] +  \mathbb{E}_{z\sim p_{\text{z}}(z)}[1 - \log{D(G(z))}]$$
+}
+
+{\Large
+\begin{equation}
+\min_{G}\max_{D}\mathbb{E}_{x\sim p_{\text{data}}(x)}[\log{D(x)}] +  \mathbb{E}_{z\sim p_{\text{z}}(z)}[1 - \log{D(G(z))}]
+\end{equation}
+}
+
 % \begin{center}
     % \includegraphics[width=15cm, height=10cm]{gan.jpg}
 % \end{center}
@@ -143,7 +149,7 @@ The loss function in a GAN is the following:
 
 %----------------------------- Dataset -----------------------------%
 \subsection{Dataset}
-Our training, validation and test datasets are picked from the validation set pof MIT's Places 365 \cite{7}. The dataset is from the CSAILVision Lab and can be accessed at \url{places2.csail.mit.edu/}.
+Our training, validation and test datasets are picked from the validation set pof MIT's Places 365 \cite{7} . The dataset is from the CSAILVision Lab and can be accessed at \url{places2.csail.mit.edu}.
 All the images are in RGB format, and are 256x256 pixels in size. All channel values are in the range [0, 255].
 Since there are more than 30,000 images, due to time and compute constraints, we only use a subset of the dataset of around 2,500 images for training and an additional 500 images for validation.
 
@@ -175,9 +181,22 @@ compare how the model performs against the use of an autoencoder and a GAN.
 
 %----------------------------- Results -----------------------------%
 \subsection{Results}
-The idea is to use grayscale images for complex image processing. The goal of this
-study is to develop a method for colorizing grayscale images using Regression and
-compare how the model performs against the use of an autoencoder and a GAN. 
+
+{\Large
+\begin{center}
+\begin{tabular}{ |c |c|c| } 
+\hline
+\textbf{Methods} & \textbf{MSE Loss} & \textbf{Accuracy} \\
+\hline
+Regression & col2 & col3 \\
+\hline
+Autoencoder & cell2 & cell3  \\ 
+\hline
+GAN & cell6 & cell7  \\ 
+\hline
+\end{tabular}
+\end{center}
+}
 
 %----------------------------- Limitations and Further Work -----------------------------%
 \section{Limitations and Further Work}
@@ -197,7 +216,7 @@ The project was built with both Vikram and Sudhanva as collaborators in the same
 \begin{itemize}
 \item GAN architecture, code, tests and experiments.
 \item Trained the models on the dataset on AWS/Colab/GPU.
-\item Model inferencing and reporting.
+\item Model inference and reporting.
 \end{itemize}
 
 
@@ -206,7 +225,7 @@ The project was built with both Vikram and Sudhanva as collaborators in the same
 \begin{itemize}
 \item Regression architecture, code, tests and experiments.
 \item Autoencoder architecture, code, tests and experiments.
-\item Model turning and reporting.
+\item Model tuning and reporting.
 \end{itemize}
 
 \cite{1}
