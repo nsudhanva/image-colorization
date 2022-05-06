@@ -11,6 +11,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+checkpoints/*
 build/
 develop-eggs/
 dist/
@@ -29,6 +30,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+*.jpg
+*.tar
+*.ipynb
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
