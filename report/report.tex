@@ -216,7 +216,44 @@ The loss function in a GAN is the following:
     \centering
         \includegraphics[width=15cm, height=10cm]{gan.jpg}
         \caption{Autoencoder architecture}
-    \end{figure}
+\end{figure}
+
+\subsubsection{Generator}
+
+\begin{center}
+    \begin{tabular}{ |c|c|c|c|c| } 
+    \hline
+    Input Size & Output Size & Kernel Size & Function & Upsample \\
+    \hline
+    1 & 32 & 3 & ReLU & - \\ 
+    32 & 64 & 3 & ReLU & - \\ 
+    64 & 128 & 3 & ReLU &  - \\ 
+    128 & 256 & 3 & ReLU & - \\ 
+    256 & 128 & 3 & ReLU & ConvTranspose2D \\ 
+    128 & 64 & 3 & ReLU & ConvTranspose2D \\ 
+    64 & 32 & 3 & ReLU & ConvTranspose2D \\ 
+    32 & 2 & 3 & TanH & ConvTranspose2D \\ 
+
+    \hline
+    \end{tabular}
+\end{center}
+
+\subsubsection{Discriminator}
+
+\begin{center}
+    \begin{tabular}{ |c|c|c|c|c| } 
+    \hline
+    Input Size & Output Size & Kernel Size & Function  \\
+    \hline
+    3 & 32 & 3 & ReLU \\ 
+    32 & 64 & 3 & ReLU  \\ 
+    64 & 128 & 3 & ReLU \\ 
+    128 & 256 & 3 & ReLU  \\ 
+    57600 & 1 & - & Sigmoid  \\ 
+
+    \hline
+    \end{tabular}
+\end{center}
 
 %----------------------------- Experimental Results -----------------------------%
 \section{Experimental Results}
@@ -274,6 +311,21 @@ GAN & cell6  \\
 \hline
 \end{tabular}
 \end{center}
+
+\begin{figure}[htp]
+
+    \centering
+    \includegraphics[width=.3\textwidth]{autoencoder-results-1.jpg}\hfill
+    \includegraphics[width=.3\textwidth]{autoencoder-results-2.jpg}\hfill
+    \includegraphics[width=.3\textwidth]{autoencoder-results-2.jpg}\hfill
+    \includegraphics[width=.3\textwidth]{regression-results-1.jpg}\hfill
+    \includegraphics[width=.3\textwidth]{regression-results-2.jpg}\hfill
+    \includegraphics[width=.3\textwidth]{regression-results-2.jpg}\hfill
+
+    \caption{default}
+    \label{fig:figure3}
+    
+\end{figure}
 
 \pagebreak
 
