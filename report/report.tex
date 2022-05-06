@@ -30,7 +30,7 @@ Adversarial Network (GAN) for Image Colorization}
 Traditional image colorization methods are based on manual colorization methods such as Photoshop or GIMP.
 However, these methods are not robust to the changes in the lighting conditions of the scene.
 Recent advances in deep learning have made it possible to learn a colorization model from grayscale images, where the input for the networks are a set of grayscale images and the output the network learns is the colorized image. 
-In this work, we present three methods for colorization: regression, autoencoder and generative adversarial network (GAN).
+In this work, we present three methods for colorization: convolutional neural networks + regression, autoencoder and generative adversarial network (GAN).
 \end{abstract}
 
 %----------------------------- Introduction -----------------------------%
@@ -44,7 +44,7 @@ The goal of this study is to develop a method for colorizing grayscale images us
 
 - \textbf{Convnet Autoencoder:} Uses CNN in an encoder-decoder fashion, where the encoder represents the grayscale image as a latent representation, which the decoder then converts to a 3-channel color image.
 
-- \textbf{GAN:}  Uses a custom minimax log-loss function with a generator and a discriminator. The generator takes a grayscale image as an input, which it tries to convert to a 3-channel color image. The discriminator tries to tell 2 sets of images apart, i.e., (grayscale, original-color) and (grayscale, generator-color-image).
+- \textbf{GAN:}  Uses a custom minimax log-loss function with a generator and a discriminator. The generator takes a grayscale image as an input, which it tries to convert to a 2-channel UV color space. The discriminator tries to differenciate 2 sets of images apart, i.e., (grayscale, original-color) and (grayscale, generator-color-image).
 
 %----------------------------- Technical Details -----------------------------%
 \section{Technical Details}
@@ -193,14 +193,14 @@ First, the loss of the discriminator is computed as the average of its loss on a
 Each loss is a MSE loss for each pixel on the image (labeled 0 or 1). 
 This loss could effectively capture whether this discriminator could distinguish between ground-truth image and generated image.
 Second, the loss of the generator is $\lambda$ times L1 loss between predicted image and true image, plus discriminator loss on predicted image with label true.
-This loss could make the generator generate images that have less difference with true image and less loss from the discriminator \cite{6}.
+This loss could make the generator generate images that have less difference with true image and less loss from the discriminator \cite{6} \cite{9} \cite{10}.
 
 %----------------------------- Loss Function: GAN -----------------------------%
 \subsection{Loss Function}
 The loss function in a GAN is the following:
 {\Large
 \begin{equation}
-    \ell(x,y) = \frac{1}{2} \left( \sum_{i=1}^{n} \left( x_{AB} - y_{AB} \right)^2 + \lambda \sum_{i=1}^{n} \left( x_{AB} - y_{AB} \right)^2 \right)
+    \ell(x,y) = \frac{1}{2} \left( \sum_{i=1}^{n} \left( x_{UV} - y_{UV} \right)^2 + \lambda \sum_{i=1}^{n} \left( x_{UV} - y_{UV} \right)^2 \right)
 \end{equation}
 }
 
@@ -260,7 +260,7 @@ The loss function in a GAN is the following:
 
 %----------------------------- Dataset -----------------------------%
 \subsection{Dataset}
-Our training, validation and test datasets are picked from the validation set pof MIT's Places 365 \cite{7} . The dataset is from the CSAILVision Lab and can be accessed at \url{places2.csail.mit.edu}.
+Our training, validation and test datasets are picked from the validation set pof MIT's Places 365 \cite{7}. The dataset is from the CSAILVision Lab and can be accessed at \url{places2.csail.mit.edu}.
 All the images are in RGB format, and are 256x256 pixels in size. All channel values are in the range [0, 255].
 Since there are more than 30,000 images, due to time and compute constraints, we only use a subset of the dataset of around 2,500 images for training and an additional 500 images for validation.
 
@@ -282,19 +282,17 @@ Our models are now trained on this L channel to predict the values of the a and 
 \end{itemize}
 
 
-%----------------------------- Pre-processing for Convnet based encoder-decoder and GAN -----------------------------%   
-\subsubsection{Pre-processing for Convnet based encoder-decoder and GAN}
-Here, we will use the same pre-processing steps as for the regression method. 
-The only difference is that we will use a CNN in an encoder-decoder fashion for the second method and a GAN for the third, as shown below:
+%----------------------------- Pre-processing for GAN -----------------------------%   
+\subsubsection{Pre-processing for GAN}
+\begin{itemize}
+    \item All images are first converted to YUV channel image from RGB channel.
+    \item The Y channel first extracted from the YUV channel image and this serves as the input to the regression model.
+    \item The U and V channels are used as the targets for the regression model.
+    \item The images are then resized to a fixed size of 256x256.
+    \item The images are then normalized in the range of [-1, 1] for U and V channels.
+    \item The training set is then used to train the model.
+\end{itemize}
 
-%----------------------------- Implementation -----------------------------%
-\subsection{Implementation}
-We have used ResNet-18 as the encoder and decoder for the first two methods. 
-The encoder is trained on the training set and the decoder is trained on the validation set.
-The encoder is used to generate the latent space vector z.
-The decoder is used to generate the predicted image from the latent space vector z.
-The generator is used to generate the predicted image from the latent space vector z.
-\pagebreak
 %----------------------------- Results -----------------------------%
 \subsection{Results}
 
@@ -337,7 +335,7 @@ Discriminator BCA & 0.5 & 0.65   \\
     \caption{default}
     
 \end{figure}
-
+\pagebreak
 \subsubsection{Autoencoder}
 
 \begin{figure}[htp]
@@ -347,7 +345,7 @@ Discriminator BCA & 0.5 & 0.65   \\
     \caption{default}
     
 \end{figure}
-\pagebreak
+
 \subsubsection{GAN}
 
 \begin{figure}[htp]
@@ -387,13 +385,13 @@ Discriminator BCA & 0.5 & 0.65   \\
 \end{figure}
 
 %----------------------------- Further Work -----------------------------%
-\section{Further Work}
+\section{Future Work}
 
 \begin{itemize}
-    \item Performing a weight pre-training for the GAN generator or using.
-    \item Semantic colorization by detection and segmentation would yield better results.
-    \item More data with more number of epochs could also affect the results.
-    \item Real time user guided colorization along with a colorization algorithm would also yield better results.
+    \item Transfer Learning: The GAN's generator is trained with pre-trained weights. This is emperically found to yield better results.
+    \item Segmentation: Segmenting instances in the image, and then using historic color values to predict the color of the instance. 
+    \item Training: The models can be trained with more data with more number of epochs (1000s) to achieve better results.
+    \item User Guided Colorization: Real time user guided colorization achieves much better results than the current implementation.
 \end{itemize}
 
 %----------------------------- Contribution -----------------------------%
@@ -420,7 +418,7 @@ The project was built with both Vikram and Sudhanva as collaborators in the same
 \item Autoencoder architecture, code, tests and experiments.
 \item Model tuning and reporting.
 \end{itemize}
-\pagebreak
+
 \bibliographystyle{plain}
 \bibliography{sample}
 
