@@ -40,7 +40,7 @@ Another way used to represent images is called the L, *a, *b (CIELAB) colorspace
 The idea is to use grayscale images for complex image processing. 
 The goal of this study is to develop a method for colorizing grayscale images using the three aforementioned methods:
 
-- \textbf{Convolutional Neural Network + Regression:} Loss between actual values of *a and *b channels and predicted *a and *b channels using vanilla CNN, followed by regression.
+- \textbf{Convolutional Neural Network + Regression:} Loss between actual values of *a and *b channels and predicted *a and *b channels using vanilla CNN, followed by regression \cite{1}.
 
 - \textbf{Convnet Autoencoder:} Uses CNN in an encoder-decoder fashion, where the encoder represents the grayscale image as a latent representation, which the decoder then converts to a 3-channel color image.
 
@@ -104,13 +104,13 @@ The loss function for this problem is the Euclidean distance between the predict
 \subsection{Method 2: Autoencoder}
 In this method, we use a convolutional autoencoder to learn a mapping from grayscale to color.
 The encoder is a convolutional neural network, which reduces the given grayscale image to a dense latent representation, from which the decoder reconstructs the AB channels of the image.
-Therefore, in this method, we have two CNNs, one for the encoder and one for the decoder.
+Therefore, in this method, we have two CNNs, one for the encoder and one for the decoder \cite{2}.
 The upsampling layers in the decoder are transposed convolutional layers, where there are a lot of parameters to be learned by the model while reconstructing the AB channels of the image.
 The architecture of the entire network is as shown in the figure below. 
 
 
 One approach is to make two copies of the image, one to be a grayscale image and it will act as your input to the encoder which is responsible for extracting the features of the image 
-“Latent Space Representations” that can be used as input for the decoder to reconstruct the image, the other copy will be the same image but colorized as your target to the decoder (Supervised Learning) so that it can minimize the error between the original colored image and the generated one.
+“Latent Space Representations” that can be used as input for the decoder to reconstruct the image, the other copy will be the same image but colorized as your target to the decoder (Supervised Learning) so that it can minimize the error between the original colored image and the generated one \cite{4}.
 
 
 %----------------------------- Loss Function: Autoencoder -----------------------------%
@@ -189,11 +189,11 @@ The discriminator is trained on two sets of images, to classify the predicted co
 The pipeline of the model on a black-white image and the corresponding colored image is shown in the figure below.
 
 In terms of loss function, there are two main loss functions applied here. 
-First, the loss of the discriminator is computed as the average of its loss on a true image and its loss on a fake image. 
+First, the loss of the discriminator is computed as the average of its loss on a true image and its loss on a fake image \cite{5}. 
 Each loss is a MSE loss for each pixel on the image (labeled 0 or 1). 
 This loss could effectively capture whether this discriminator could distinguish between ground-truth image and generated image.
 Second, the loss of the generator is $\lambda$ times L1 loss between predicted image and true image, plus discriminator loss on predicted image with label true.
-This loss could make the generator generate images that have less difference with true image and less loss from the discriminator.
+This loss could make the generator generate images that have less difference with true image and less loss from the discriminator \cite{6}.
 
 %----------------------------- Loss Function: GAN -----------------------------%
 \subsection{Loss Function}
@@ -294,46 +294,75 @@ The encoder is trained on the training set and the decoder is trained on the val
 The encoder is used to generate the latent space vector z.
 The decoder is used to generate the predicted image from the latent space vector z.
 The generator is used to generate the predicted image from the latent space vector z.
-
+\pagebreak
 %----------------------------- Results -----------------------------%
 \subsection{Results}
+
+\subsubsection{CNN + Regression, Autoencoder}
 
 \begin{center}
 \begin{tabular}{ |c |c|c| } 
 \hline
-\textbf{Methods} & \textbf{MSE Loss}\\
+\textbf{Methods} & \textbf{MSE Loss Train} & \textbf{MSE Loss Validation} \\
 \hline
-Regression & col2 \\
+CNN + Regression & 0.0019 & 0.0028 \\
 \hline
-Autoencoder & cell2   \\ 
-\hline
-GAN & cell6  \\ 
+Autoencoder & 0.0048 & 0.006   \\ 
 \hline
 \end{tabular}
 \end{center}
 
+\subsubsection{GAN}
+
+\begin{center}
+\begin{tabular}{ |c |c|c| } 
+\hline
+\textbf{Methods} & \textbf{Loss Train} & \textbf{Loss Validation} \\
+\hline
+Generator L1 & 0.08 & 0.5 \\
+\hline
+Discriminator BCA & 0.5 & 0.65   \\ 
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Inference}
+
+\subsubsection{CNN + Regression}
+
 \begin{figure}[htp]
 
     \centering
-    \includegraphics[width=.3\textwidth]{autoencoder-results-1.jpg}\hfill
-    \includegraphics[width=.3\textwidth]{autoencoder-results-2.jpg}\hfill
-    \includegraphics[width=.3\textwidth]{autoencoder-results-2.jpg}\hfill
-    \includegraphics[width=.3\textwidth]{regression-results-1.jpg}\hfill
-    \includegraphics[width=.3\textwidth]{regression-results-2.jpg}\hfill
-    \includegraphics[width=.3\textwidth]{regression-results-2.jpg}\hfill
-
+    \includegraphics[width=15cm, height=6cm]{regression-inference.png}\hfill
     \caption{default}
-    \label{fig:figure3}
     
 \end{figure}
 
+\subsubsection{Autoencoder}
+
+\begin{figure}[htp]
+
+    \centering
+    \includegraphics[width=15cm, height=6cm]{autoencoder-inference.png}\hfill
+    \caption{default}
+    
+\end{figure}
 \pagebreak
+\subsubsection{GAN}
+
+\begin{figure}[htp]
+
+    \centering
+    \includegraphics[width=15cm, height=6cm]{gan-inference.png}\hfill
+    \caption{default}
+    
+\end{figure}
 
 \subsubsection{Regression Loss Plot}
 
 \begin{figure}[htbp!]
 \begin{center}
-    \includegraphics[width=10cm, height=5cm]{regression-plot.jpg}
+    \includegraphics[width=9cm, height=4cm]{regression-plot.jpg}
     \caption{Caption}
 \end{center}
 \end{figure}
@@ -342,7 +371,7 @@ GAN & cell6  \\
 
 \begin{figure}[htbp!]
 \begin{center}
-    \includegraphics[width=9cm, height=4cm]{encoder-decoder-plot.jpg}
+    \includegraphics[width=9cm, height=5cm]{encoder-decoder-plot.jpg}
     \caption{Caption}
 \end{center}
 \end{figure}
@@ -352,20 +381,23 @@ GAN & cell6  \\
 
 \begin{figure}[htbp!]
 \begin{center}
-    \includegraphics[width=9cm, height=4cm]{encoder-decoder-plot.jpg}
+    \includegraphics[width=13cm, height=6cm]{gan-loss-plot.png}
     \caption{Caption}
 \end{center}
 \end{figure}
-\pagebreak
 
-%----------------------------- Limitations and Further Work -----------------------------%
-\section{Limitations and Further Work}
-The idea is to use grayscale images for complex image processing. The goal of this
-study is to develop a method for colorizing grayscale images using Regression and
-compare how the model performs against the use of an autoencoder and a GAN. 
+%----------------------------- Further Work -----------------------------%
+\section{Further Work}
+
+\begin{itemize}
+    \item Performing a weight pre-training for the GAN generator or using.
+    \item Semantic colorization by detection and segmentation would yield better results.
+    \item More data with more number of epochs could also affect the results.
+    \item Real time user guided colorization along with a colorization algorithm would also yield better results.
+\end{itemize}
 
 %----------------------------- Contribution -----------------------------%
-\section{Contribution}
+\section{Contributions}
 
 The code and instructions to use or run it are available 
 at \url{github.com/nsudhanva/image-colorization}. 
@@ -388,14 +420,7 @@ The project was built with both Vikram and Sudhanva as collaborators in the same
 \item Autoencoder architecture, code, tests and experiments.
 \item Model tuning and reporting.
 \end{itemize}
-
-\cite{1}
-\cite{2}
-\cite{4}
-\cite{5}
-\cite{6}
-\cite{7}
-\cite{8}
+\pagebreak
 \bibliographystyle{plain}
 \bibliography{sample}
 
