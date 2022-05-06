@@ -1,7 +1,7 @@
 import os
 from typing import Tuple
-
 import cv2
+from skimage.color import rgb2lab
 import torch
 import torchvision.transforms as T
 from torch.utils.data import Dataset
@@ -27,13 +27,12 @@ class ColorizeGANDataloader(Dataset):
         # Return the input tensor and output tensor for training
         image_path = os.path.join(
             self.data_directory, self.landscape_dataset[index])
+        
+        img = cv2.imread(image_path)
+        img_lab = rgb2lab(img).astype("float32")  # Converting RGB to L*a*b
+        l = img_lab[:, :, 0] / 50. - 1.  # Between -1 and 1
+        ab = img_lab[:, :, 1:3] / 110.  # Between -1 and 1
+        l = self.input_transform(l)
+        ab = self.target_transform(ab)
 
-        color_image = cv2.imread(image_path)
-        l_channel, _, _ = cv2.split(color_image)
-
-        l_channel = l_channel / 100
-        l_channel = self.input_transform(l_channel)
-        l_channel = l_channel.type(torch.FloatTensor)
-        color_image = self.target_transform(color_image)
-        color_image = color_image.type(torch.FloatTensor)
-        return (l_channel, color_image)
+        return(l, ab)
