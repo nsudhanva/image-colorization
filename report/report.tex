@@ -13,6 +13,7 @@
 \usepackage{amsfonts}
 \usepackage{graphicx}
 \usepackage{multirow}
+\usepackage{adjustbox}
 
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
@@ -57,56 +58,47 @@ Several convolutional layers extract semantic information from the input images 
 Here, we are using pure upsample, where there are no parameters to be learned.
 Specifically, the beginning of our model is a ResNet-18, an image classification network with 18 layers and residual connections. 
 Modify the first layer of the network to accept grayscale input images and cut it off after the 6th set of layers. 
-It predicts a two-element vector (AB channel) for each pixel of the image at the end of the network, as shown in the figure below.
-\\
-
-\begin{figure}
-    \includegraphics[width=\linewidth]{reg.jpg}
-    \caption{CNN + Regression architecture}
-\end{figure}
-
-We want to minimize the Euclidean error between the AB channel we estimate and the ground truth.
-However, this loss function is problematic for colorization due to the multimodality of the problem since there may be multiple plausible solutions.
+It predicts a two-element vector (AB channel) for each pixel of the image at the end of the network, as shown in the figure below. We want to minimize the Euclidean error between the AB channel we estimate and the ground truth. However, this loss function is problematic for colorization due to the multimodality of the problem since there may be multiple plausible solutions.
 As a result, our model will usually choose desaturated colors which are less likely to be correct, and the model prefers more desaturated colors than running the risk of choosing colors that are too bright.
+
+* All layers are two-dimensional convolutional layers.
+
+\begin{center}
+    \begin{tabular}{ |c|c|c|c|c| } 
+    \hline
+    Input Size & Output Size & Kernel Size & Function & Upsample \\
+    \hline
+    512 & 128 & 3 & ReLU & Scale Factor = 2 \\ 
+    128 & 64 & 3 & ReLU & - \\ 
+    64 & 64 & 3 & ReLU &  - \\ 
+    64 & 32 & 3 & ReLU & Scale Factor = 2 \\ 
+    32 & 2 & 3 & ReLU & Scale Factor = 2 \\ 
+    
+    \hline
+    
+    \end{tabular}
+    
+    \end{center}
 
 %----------------------------- Loss Function: Regression -----------------------------%
 
-\subsection{Loss Function: Regression}
+\subsubsection{Loss Function: Regression}
 The loss function for this problem is the Euclidean distance between the predicted AB channel and the ground truth and can be written as:
+
 {\Large
 \begin{equation}
     \ell(x,y) = \sum_{i=1}^{n} \left( x_{AB} - y_{AB} \right)^2
 \end{equation}}
 
+%----------------------------- Architecture: Regression -----------------------------%
 
-%----------------------------- Architecture -----------------------------%
-
-\subsection{Architecture: Regression}
-
-\
-
-* All layers are two-dimensional convolutional layers.
-\begin{table}
-\begin{center}
-\begin{tabular}{ |c|c|c|c|c| } 
-\hline
-Input Size & Output Size & Kernel Size & Function & Upsample \\
-\hline
-512 & 128 & 3 & ReLU & Scale Factor = 2 \\ 
-128 & 64 & 3 & ReLU & - \\ 
-64 & 64 & 3 & ReLU &  - \\ 
-64 & 32 & 3 & ReLU & Scale Factor = 2 \\ 
-32 & 2 & 3 & ReLU & Scale Factor = 2 \\ 
-
-\hline
-
-\end{tabular}
-
-\end{center}
-\caption{CNN + Regression architecture}
-\end{table}
-
-\pagebreak
+\subsubsection{Architecture: Regression}
+\begin{figure}[htbp!]
+    \centering
+        \includegraphics[width=9cm, height=4cm]{reg.jpg}
+        \caption{CNN + Regression architecture}
+    \end{figure}
+    
 %----------------------------- Method 2: Autoencoder -----------------------------%
 
 \subsection{Method 2: Autoencoder}
@@ -115,24 +107,26 @@ The encoder is a convolutional neural network, which reduces the given grayscale
 Therefore, in this method, we have two CNNs, one for the encoder and one for the decoder.
 The upsampling layers in the decoder are transposed convolutional layers, where there are a lot of parameters to be learned by the model while reconstructing the AB channels of the image.
 The architecture of the entire network is as shown in the figure below. 
+
+
 One approach is to make two copies of the image, one to be a grayscale image and it will act as your input to the encoder which is responsible for extracting the features of the image 
 “Latent Space Representations” that can be used as input for the decoder to reconstruct the image, the other copy will be the same image but colorized as your target to the decoder (Supervised Learning) so that it can minimize the error between the original colored image and the generated one.
-\\
 
-\begin{figure}
-    \includegraphics[width=10cm, height=7cm]{autoencoder.jpg}
-    \caption{Autoencoder architecture}
-\end{figure}
+
 %----------------------------- Loss Function: Autoencoder -----------------------------%
 
-\subsection{Loss Function: Autoencoder}
+\subsubsection{Loss Function: Autoencoder}
 The loss function for this method is the Euclidean distance between the predicted AB channel and the ground truth and is the same as (1).
 
 
-%----------------------------- Architecture -----------------------------%
+\subsubsection{Architecture: Autoencoder}
 
-\subsection{Architecture: Autoencoder}
 
+\begin{figure}[htbp!]
+    \centering
+        \includegraphics[width=9cm, height=4cm]{autoencoder.jpg}
+        \caption{Autoencoder architecture}
+    \end{figure}
 
 \subsubsection{Encoder}
 * All layers are two-dimensional convolutional layers.
@@ -186,8 +180,6 @@ Input Size & Output Size & Kernel Size & Function & Upsample \\
 
 Final activation function is TanH [-1, 1] for the output of the decoder.
 
-\
-
 %----------------------------- Method 3: Generative Adversarial Network -----------------------------%
 
 \subsection{Method 3: Generative Adversarial Network}
@@ -202,7 +194,6 @@ Each loss is a MSE loss for each pixel on the image (labeled 0 or 1).
 This loss could effectively capture whether this discriminator could distinguish between ground-truth image and generated image.
 Second, the loss of the generator is $\lambda$ times L1 loss between predicted image and true image, plus discriminator loss on predicted image with label true.
 This loss could make the generator generate images that have less difference with true image and less loss from the discriminator.
-
 
 %----------------------------- Loss Function: GAN -----------------------------%
 \subsection{Loss Function}
@@ -219,14 +210,16 @@ The loss function in a GAN is the following:
 \end{equation}
 }
 
-% \begin{center}
-    % \includegraphics[width=15cm, height=10cm]{gan.jpg}
-% \end{center}
+\subsubsection{Architecture: GAN}
 
+\begin{figure}[htbp!]
+    \centering
+        \includegraphics[width=15cm, height=10cm]{gan.jpg}
+        \caption{Autoencoder architecture}
+    \end{figure}
 
 %----------------------------- Experimental Results -----------------------------%
 \section{Experimental Results}
-
 
 %----------------------------- Dataset -----------------------------%
 \subsection{Dataset}
@@ -242,12 +235,15 @@ Our models are now trained on this L channel to predict the values of the a and 
 
 %----------------------------- Pre-processing for Regression and Autoencoder -----------------------------%
 \subsubsection{Pre-processing for Regression and Autoencoder}
-    - All images are first converted to L*a*b channel image from RGB channel. \\
-    - The L channel first extracted from the L*a*b channel image and this serves as the input to the regression model. \\
-    - The *a and *b channels are used as the tragets for the regression model. \\
-    - The images are then resized to a fixed size of 224x224. \\
-    - The images are then normalized in the range of [-1, 1] for *a and *b channels. \\
-    - The training set is then used to train the model. \\
+\begin{itemize}
+    \item All images are first converted to L*a*b channel image from RGB channel.
+    \item The L channel first extracted from the L*a*b channel image and this serves as the input to the regression model.
+    \item The *a and *b channels are used as the tragets for the regression model.
+    \item The images are then resized to a fixed size of 224x224.
+    \item The images are then normalized in the range of [-1, 1] for *a and *b channels.
+    \item The training set is then used to train the model.
+\end{itemize}
+
 
 %----------------------------- Pre-processing for Convnet based encoder-decoder and GAN -----------------------------%   
 \subsubsection{Pre-processing for Convnet based encoder-decoder and GAN}
@@ -261,7 +257,6 @@ The encoder is trained on the training set and the decoder is trained on the val
 The encoder is used to generate the latent space vector z.
 The decoder is used to generate the predicted image from the latent space vector z.
 The generator is used to generate the predicted image from the latent space vector z.
-
 
 %----------------------------- Results -----------------------------%
 \subsection{Results}
@@ -284,7 +279,7 @@ GAN & cell6  \\
 
 \subsubsection{Regression Loss Plot}
 
-\begin{figure}[h]
+\begin{figure}[htbp!]
 \begin{center}
     \includegraphics[width=10cm, height=5cm]{regression-plot.jpg}
     \caption{Caption}
@@ -293,7 +288,7 @@ GAN & cell6  \\
 
 \subsubsection{Autoencoder Loss Plot}
 
-\begin{figure}[h]
+\begin{figure}[htbp!]
 \begin{center}
     \includegraphics[width=9cm, height=4cm]{encoder-decoder-plot.jpg}
     \caption{Caption}
@@ -303,14 +298,14 @@ GAN & cell6  \\
 
 \subsubsection{GAN Loss Plot}
 
-\begin{figure}[h]
+\begin{figure}[htbp!]
 \begin{center}
     \includegraphics[width=9cm, height=4cm]{encoder-decoder-plot.jpg}
     \caption{Caption}
 \end{center}
 \end{figure}
-
 \pagebreak
+
 %----------------------------- Limitations and Further Work -----------------------------%
 \section{Limitations and Further Work}
 The idea is to use grayscale images for complex image processing. The goal of this
